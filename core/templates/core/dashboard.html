@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Domino Disruption Predictor</h1>
+    <nav class="nav-links">
+        <a href="/log-entry/"><i class="fas fa-plus-circle"></i> Log Disruption</a>
+        <a href="/dashboard/"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="#" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+</div>
+
+<div class="container">
+    <h2>Disruption Overview</h2>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Total Disruptions</h3>
+            <p id="totalDisruptions">0</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-hourglass-half"></i>
+            <h3>Total Downtime</h3>
+            <p id="totalDowntime">0 min</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-tags"></i>
+            <h3>Unique Tags</h3>
+            <p id="uniqueTags">0</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-calendar-alt"></i>
+            <h3>Avg. Disruptions/Day</h3>
+            <p id="avgDisruptionsPerDay">0</p>
+        </div>
+    </div>
+
+    <div class="charts-container">
+        <div class="chart-wrapper"><canvas id="tagsChart"></canvas></div>
+        <div class="chart-wrapper"><canvas id="trendChart"></canvas></div>
+    </div>
+
+    <h2>Recent Disruptions</h2>
+    <div class="disruption-list" id="recentDisruptionsList">
+        <p style="text-align: center; color: #777;">Loading...</p>
+    </div>
+</div>
+
+<div class="footer">
+    <p>&copy; 2025 Domino Disruption Predictor. MC25117.  Sachin Patil</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}

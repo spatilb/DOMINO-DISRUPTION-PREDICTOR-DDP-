@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Disruption</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --input-bg: #f3f4f6;
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--primary-gradient);
+            color: var(--text-color);
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 0.8s ease-out;
+            border: 1px solid #edf2f7;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 1.8em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        label i {
+            margin-right: 8px;
+            color: #a0aec0;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1em;
+            background-color: var(--input-bg);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            color: var(--text-color);
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            background-color: #fff;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.9em;
+            color: #718096;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 10px;
+        }
+
+        /* Flatpickr specific styling */
+        .flatpickr-input[readonly] {
+            background-color: var(--input-bg);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Log New Disruption</h1>
+        <form id="disruptionForm">
+            <div class="form-group">
+                <label for="timestamp"><i class="fas fa-calendar-alt"></i> Timestamp</label>
+                <input type="text" id="timestamp" name="timestamp" required>
+            </div>
+            <div class="form-group">
+                <label for="duration"><i class="fas fa-hourglass-half"></i> Duration (minutes)</label>
+                <input type="number" id="duration" name="duration" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="tag"><i class="fas fa-tag"></i> Tag</label>
+                <select id="tag" name="tag" required>
+                    <option value="">Select a tag</option>
+                    <!-- Tags will be loaded here dynamically -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="context"><i class="fas fa-align-left"></i> Context</label>
+                <textarea id="context" name="context" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="severity"><i class="fas fa-exclamation-triangle"></i> Severity (Optional)</label>
+                <input type="text" id="severity" name="severity">
+            </div>
+            <button type="submit" class="btn-submit"><i class="fas fa-plus-circle"></i> Log Disruption</button>
+        </form>
+        <div class="footer">
+            <a href="/dashboard/">View Dashboard</a> | 
+            <a href="/login/" id="logoutLink">Logout</a>
+            <p>&copy; 2025 Domino Disruption Predictor. MC25117.  Sachin Patil.</p>
+        </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check auth
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                window.location.href = '/login/';
+                return;
+            }
+
+            document.getElementById('logoutLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                window.location.href = '/login/';
+            });
+
+            flatpickr("#timestamp", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                defaultDate: new Date(),
+            });
+
+            // Fetch Tags
+            fetch('/api/tags/', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const select = document.getElementById('tag');
+                data.forEach(tag => {
+                    const option = document.createElement('option');
+                    option.value = tag.id; // Assuming Tag has ID
+                    option.textContent = tag.name;
+                    select.appendChild(option);
+                });
+            })
+            .catch(err => console.error('Error fetching tags:', err));
+
+            const disruptionForm = document.getElementById('disruptionForm');
+
+            disruptionForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                const timestamp = document.getElementById('timestamp').value;
+                const duration = document.getElementById('duration').value;
+                const tag = document.getElementById('tag').value;
+                const context = document.getElementById('context').value;
+                const severity = document.getElementById('severity').value;
+
+                const disruptionData = {
+                    timestamp: timestamp, // Format matches Django defaults? Need to check.
+                    duration: parseInt(duration),
+                    tag: parseInt(tag), // Send ID
+                    context: context,
+                    severity: severity
+                };
+
+                try {
+                    const response = await fetch('/api/disruption/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(disruptionData)
+                    });
+
+                    if (response.ok) {
+                        const responseData = await response.json();
+                        
+                        if (responseData.root_cause_suggestion) {
+                            alert('Disruption logged!\n\n💡 Suggestion: ' + responseData.root_cause_suggestion);
+                        } else {
+                            alert('Disruption logged successfully!');
+                        }
+                        
+                        disruptionForm.reset();
+                        window.location.href = '/dashboard/';
+                    } else {
+                        const errData = await response.json();
+                        alert('Error: ' + JSON.stringify(errData));
+                    }
+                } catch (error) {
+                    console.error('Error logging disruption:', error);
+                    alert('An unexpected error occurred.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
